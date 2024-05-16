@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+.hidden { display: none; }
+#goodies {
+    width: 400px;
+}
+#goodies p, #goodies ul {
+    margin: 1px;
+}
+#goodies ul {
+    list-style: none;
+    padding-left: 30px;
+}
+#goodies > div {
+    border-top: 1px solid black;
+}
+pre {
+    font-size: 14px;
+}
+        </style>
+        <title>SDV volcano dungeon predictor</title>
+        
+        <!-- ls icons | sed 's#\(.*\)#  <link rel="preload" as="image" href="icons/\1" />#' -->
+  <link rel="preload" as="image" href="icons/cinder_shard.png" />
+  <link rel="preload" as="image" href="icons/common_chest.png" />
+  <link rel="preload" as="image" href="icons/deluxe_pirate_hat.png" />
+  <link rel="preload" as="image" href="icons/dragonscale_boots.png" />
+  <link rel="preload" as="image" href="icons/dragontooth_club.png" />
+  <link rel="preload" as="image" href="icons/dragontooth_cutlass.png" />
+  <link rel="preload" as="image" href="icons/dragontooth_shiv.png" />
+  <link rel="preload" as="image" href="icons/dragon_tooth.png" />
+  <link rel="preload" as="image" href="icons/dwarf_dagger.png" />
+  <link rel="preload" as="image" href="icons/dwarf_hammer.png" />
+  <link rel="preload" as="image" href="icons/dwarf_sword.png" />
+  <link rel="preload" as="image" href="icons/golden_coconut.png" />
+  <link rel="preload" as="image" href="icons/hot_java_ring.png" />
+  <link rel="preload" as="image" href="icons/magma_cap.png" />
+  <link rel="preload" as="image" href="icons/mermaid_boots.png" />
+  <link rel="preload" as="image" href="icons/monster_floor.png" />
+  <link rel="preload" as="image" href="icons/ostrich_egg.png" />
+  <link rel="preload" as="image" href="icons/phoenix_ring.png" />
+  <link rel="preload" as="image" href="icons/pineapple_seeds.png" />
+  <link rel="preload" as="image" href="icons/protection_ring.png" />
+  <link rel="preload" as="image" href="icons/rare_chest.png" />
+  <link rel="preload" as="image" href="icons/soul_sapper_ring.png" />
+  <link rel="preload" as="image" href="icons/taro_tuber.png" />
+  </head>
+  <body>
+        <div id="settings">
+            <label for=seed>game seed: </label><input class=setting type=number id=seed><br>
+            <input class=setting type=checkbox id=legacy_rng><label for=legacy_rng>legacy rng</label><br>
+            <input class=setting type=checkbox id=post_1_6_4><label for=post_1_6_4>version 1.6.4 or above</label><br>
+            <span id=caldera_wrapper><input class=setting type=checkbox id=has_caldera><label for=has_caldera>reached caldera</label><br></span>
+            <input class=setting type=checkbox id=cracked_coconut><label for=cracked_coconut>cracked golden coconut</label><br>
+            <input class=setting type=checkbox id=special_charm><label for=special_charm>have special charm</label><br>
+            <label for=max_luck_lvl>max luck buff level: </label><input class=setting type=number id=max_luck_lvl min=0><br>
+            <label for=days_played>days played: </label><input class=setting type=number id=days_played min=1><br>
+        </div>
+        <span>the luck value is the daily luck (-0.1 to 0.1), plus 0.07 per luck buff level.</span>
+        <!--<input id=spam value="run 1k iters" type=button>-->
+        <pre id="temp"></pre>
+        <div id="goodies"></div>
+        <div id="map"></div>
+        <script type="module" src="index.js"></script>
+  </body>
+</html>

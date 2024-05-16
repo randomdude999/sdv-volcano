@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "target": "es2017",
+        "moduleResolution": "bundler",
+        "module": "es6",
+    },
+    "files": [
+        "index.ts",
+    ]
+}
