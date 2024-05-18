@@ -1,49 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-.hidden { display: none; }
-body {
-  display: flex;
-  font-family: sans-serif;
-  font-size: 16px;
-}
-#leftside {
-  width: 400px;
-  padding-right: 8px;
-}
-#goodies p, #goodies ul {
-  margin: 1px;
-}
-#goodies ul {
-  list-style: none;
-  padding-left: 30px;
-}
-#goodies > div {
-  border-top: 1px solid black;
-}
-pre {
-  font-size: 14px;
-}
-#map-sel {
-  padding: 8px;
-}
-#map-sel table {
-  border-collapse: collapse;
-}
-#map-sel td {
-  border: 1px solid black;
-  padding: 0px 4px;
-}
-.layout-btn {
-  text-decoration: underline;
-  color: #00f;
-}
-.smallnum {
-  width: 7em;
-}
+      .hidden {
+        display: none;
+      }
+      body {
+        display: flex;
+        font-family: sans-serif;
+        font-size: 16px;
+      }
+      #leftside {
+        width: 400px;
+        padding-right: 8px;
+      }
+      #goodies p,
+      #goodies ul {
+        margin: 1px;
+      }
+      #goodies ul {
+        list-style: none;
+        padding-left: 30px;
+      }
+      #goodies > div {
+        border-top: 1px solid black;
+      }
+      pre {
+        font-size: 14px;
+      }
+      #map-sel {
+        padding: 8px;
+      }
+      #map-sel table {
+        border-collapse: collapse;
+      }
+      #map-sel td {
+        border: 1px solid black;
+        padding: 0px 4px;
+      }
+      .layout-btn {
+        text-decoration: underline;
+        color: #00f;
+      }
+      .smallnum {
+        width: 7em;
+      }
     </style>
     <title>SDV volcano dungeon predictor</title>
 
@@ -77,25 +80,46 @@ pre {
   <body>
     <div id="leftside">
       <div id="settings">
-        <label for=seed>game seed: </label><input class=setting type=number id=seed><br>
-        <input class=setting type=checkbox id=legacy_rng><label for=legacy_rng>legacy rng</label><br>
-        <input class=setting type=checkbox id=post_1_6_4><label for=post_1_6_4>version 1.6.4 or above</label><br>
-        <span id=caldera_wrapper><input class=setting type=checkbox id=has_caldera><label for=has_caldera>reached caldera</label><br></span>
-        <input class=setting type=checkbox id=cracked_coconut><label for=cracked_coconut>cracked golden coconut</label><br>
-        <input class=setting type=checkbox id=special_charm><label for=special_charm>have special charm</label><br>
-        <label for=max_luck_lvl>max luck buff level: </label><input class="setting smallnum" type=number id=max_luck_lvl min=0><br>
-        <label for=days_played>days played: </label><input class="setting smallnum" type=number id=days_played min=1><br>
-        <span>the luck value is the daily luck (-0.1 to 0.1), plus 0.07 per luck buff level.</span>
+        <label for="seed">game seed:</label>
+        <input class="setting" type="number" id="seed" />
+        <br />
+        <input class="setting" type="checkbox" id="legacy_rng" />
+        <label for="legacy_rng">legacy rng</label>
+        <br />
+        <input class="setting" type="checkbox" id="post_1_6_4" />
+        <label for="post_1_6_4">version 1.6.4 or above</label>
+        <br />
+        <span id="caldera_wrapper">
+          <input class="setting" type="checkbox" id="has_caldera" />
+          <label for="has_caldera">reached caldera</label>
+          <br />
+        </span>
+        <input class="setting" type="checkbox" id="cracked_coconut" />
+        <label for="cracked_coconut">cracked golden coconut</label>
+        <br />
+        <input class="setting" type="checkbox" id="special_charm" />
+        <label for="special_charm">have special charm</label>
+        <br />
+        <label for="max_luck_lvl">max luck buff level:</label>
+        <input class="setting smallnum" type="number" id="max_luck_lvl" min="0" />
+        <br />
+        <label for="days_played">days played:</label>
+        <input class="setting smallnum" type="number" id="days_played" min="1" />
+        <br />
+        <span>
+          the luck value is the daily luck (-0.1 to 0.1), plus 0.07 per luck buff level.
+        </span>
       </div>
       <!--<input id=spam value="run 1k iters" type=button>-->
       <div id="temp"></div>
       <div id="goodies"></div>
     </div>
     <div id="map">
-      <input type=checkbox id=big_tiles><label for=big_tiles>bigger map preview</label>
+      <input type="checkbox" id="big_tiles" />
+      <label for="big_tiles">bigger map preview</label>
       <div id="map-sel"></div>
       <span id="map-placeholder">[select a level to preview]</span>
-      <canvas id="map-canvas" width=512 height=512 class="hidden"></canvas>
+      <canvas id="map-canvas" width="512" height="512" class="hidden"></canvas>
       <div id="map-notes"></div>
     </div>
     <script type="module" src="index.js"></script>
