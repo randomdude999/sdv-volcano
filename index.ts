@@ -69,10 +69,14 @@ async function main() {
         reset_canvas();
         for (const el of document.getElementsByClassName("layout-btn")) {
             el.addEventListener("click", (ev) => {
-                const el = ev.target as HTMLElement;
+                const el = ev.currentTarget as HTMLElement;
                 const lvl = +el.getAttribute("data-lvl");
                 const layout = +el.getAttribute("data-layout");
                 select_layout_handler(lvl, layout);
+                for (const e2 of document.getElementsByClassName("layout_curr")) {
+                    e2.classList.remove("layout_curr");
+                }
+                el.classList.add("layout_curr");
             });
         }
     };

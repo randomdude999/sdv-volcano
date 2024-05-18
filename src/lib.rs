@@ -710,7 +710,7 @@ pub fn main_update(settings: GameSettings) -> String {
             layout.to_string()
         };
         format!(
-            "<span data-lvl=\"{}\" data-layout=\"{}\" class=\"layout-btn\">{}</span>",
+            "<button data-lvl=\"{}\" data-layout=\"{}\" class=\"layout-btn\">{}</button>",
             level, layout, displayname
         )
     }
@@ -846,14 +846,14 @@ pub fn render_map(
         out += "Mushroom floor: there's lots of Magma Caps and False Magma Caps here.<br>";
     }
     if is_monster_floor(layout) {
-        out += "Monster floor: there's lots of enemies and a guaranteed dwarf gate here.<br>";
+        out += "Monster floor: there's lots of enemies and a guaranteed dwarf gate around the exit here.<br>";
     }
     if lvl != 9 {
         if has_buttons && !is_monster_floor(layout) {
-            out += "This floor has a 20% chance of generating a dwarf gate.<br>";
+            out += "This floor has a 20% chance of generating a dwarf gate around the exit.<br>";
         }
         if has_buttons {
-            out += "When a dwarf gate generates, it'll randomly choose 1 to 3 of the buttons on the map.<br>";
+            out += "When a dwarf gate generates, it'll randomly choose 1 to 3 of the possible button positions and generate buttons there.<br>";
         }
     }
     out
