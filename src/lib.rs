@@ -4,6 +4,7 @@ use std::{
     ops::{Index, IndexMut},
 };
 use wasm_bindgen::prelude::*;
+use web_sys::{CanvasRenderingContext2d, HtmlImageElement};
 
 mod map_data;
 mod rng;
@@ -324,8 +325,10 @@ impl DungeonFloorState {
                 (settings.seed / 2) as f64,
             ],
         );
-        let mut gen_random =
-            rng::DotnetRng::new(rng::stardew_seed_mix(settings.legacy_rng, &[gen_seed as f64]));
+        let mut gen_random = rng::DotnetRng::new(rng::stardew_seed_mix(
+            settings.legacy_rng,
+            &[gen_seed as f64],
+        ));
         gen_random.next();
         let mut flip_x = gen_random.next_range(2) == 1;
         if layout_id == 0 || layout_id == 31 {
@@ -348,11 +351,15 @@ impl DungeonFloorState {
         self.load_set_pieces()
     }
 
+    fn get_tiles(&mut self) -> Tilemap {
+        self.map.clone()
+    }
+
     fn load_map_tiles(&mut self) {
         // floor tile type generation (we don't care about the result, but need RNG to sync)
         for _x in 0..64 {
             for _y in 0..64 {
-                if self.rng.next_f64() < 0.30000001192092896 {
+                if self.rng.next_f64() < 0.3_f32 as f64 {
                     self.rng.next();
                     self.rng.next();
                 }
@@ -432,8 +439,10 @@ impl DungeonFloorState {
                     map_data::SetPieceFeature::Chest => {
                         // TODO: does not go through seedmix in 1.5
                         // (though, legacy seedmix with 1 arg is mostly identity anyways...)
-                        let chest_seed =
-                            rng::stardew_seed_mix(self.settings.legacy_rng, &[self.rng.next() as f64]);
+                        let chest_seed = rng::stardew_seed_mix(
+                            self.settings.legacy_rng,
+                            &[self.rng.next() as f64],
+                        );
                         let mut chest_rng = rng::DotnetRng::new(chest_seed);
                         // roll < (0.1 or 0.5) + luckboost
                         // roll - (0.1 or 0.5) < luckboost
@@ -506,8 +515,10 @@ fn compute_volcano_layouts(settings: GameSettings) -> Vec<(f64, f64, [u32; 10])>
             return vec![(minluck, maxluck, lvlbuf.try_into().unwrap())];
         }
         let mut valid_layouts: Vec<u32> = (1..30).collect();
-        let mut layout_random =
-            rng::DotnetRng::new(rng::stardew_seed_mix(settings.legacy_rng, &[gen_seed as f64]));
+        let mut layout_random = rng::DotnetRng::new(rng::stardew_seed_mix(
+            settings.legacy_rng,
+            &[gen_seed as f64],
+        ));
         if level > 1 {
             let special_rng = layout_random.next_f64();
             let special_possible = prev.iter().all(|&x| x < 32);
@@ -562,12 +573,14 @@ fn compute_volcano_layouts(settings: GameSettings) -> Vec<(f64, f64, [u32; 10])>
     );
 }
 
+#[allow(unused_macros)]
 #[cfg(target_family = "wasm")]
 macro_rules! console_log {
     ( $( $x:expr ),* ) => {
         web_sys::console::log_1(&format!( $($x),* ).into())
     };
 }
+#[allow(unused_macros)]
 #[cfg(not(target_family = "wasm"))]
 macro_rules! console_log {
     ( $( $x:expr ),* ) => {
@@ -617,13 +630,6 @@ fn do_dungeon(
                     else {
                         unreachable!();
                     };
-                    console_log!(
-                        "{:.4}..{:.4}: split at {:.4} of {:?}",
-                        minluck,
-                        maxluck,
-                        ind,
-                        &loot
-                    );
                     let mut alt_loot = loot;
                     // we're always narrowing the [minluck, maxluck] range here, hence the
                     // .min() / .max() to make sure we keep ourselves in that range
@@ -671,13 +677,17 @@ fn display_luck(luck: f64) -> f64 {
     (luck - 1.) * 2.
 }
 
+fn is_mushroom_floor(layout: u32) -> bool {
+    layout >= 32 && layout <= 34
+}
+fn is_monster_floor(layout: u32) -> bool {
+    layout >= 35 && layout <= 37
+}
+
 #[wasm_bindgen]
-pub fn main_update(mut settings: GameSettings) -> String {
+pub fn main_update(settings: GameSettings) -> String {
     console_error_panic_hook::set_once();
     let mut out = String::new();
-    if settings.days_played < 1 {
-        settings.days_played = 1;
-    }
     let (layouts, loots) = do_dungeon(settings);
 
     let total_seasons = (settings.days_played - 1) / 28;
@@ -691,29 +701,49 @@ pub fn main_update(mut settings: GameSettings) -> String {
     )
     .unwrap();
 
-    // tmp display for the uhhhhhhh
-    let layouts_disp = layouts
-        .iter()
-        .map(|things| {
-            things
-                .iter()
-                .map(|x| {
-                    if x.2 >= 32 && x.2 <= 34 {
-                        format!("{} (shrooms)", x.2)
-                    } else if x.2 >= 35 && x.2 <= 37 {
-                        format!("{} (infested)", x.2)
-                    } else {
-                        x.2.to_string()
-                    }
-                })
-                .collect::<Vec<_>>()
-                .join("/")
-        })
-        .collect::<Vec<_>>()
-        .join(", ");
-    writeln!(out, "layouts: {layouts_disp}").unwrap();
+    fn format_layout(level: usize, layout: u32) -> String {
+        let displayname = if is_mushroom_floor(layout) {
+            format!("{} {}", format_icon("magma_cap"), layout)
+        } else if is_monster_floor(layout) {
+            format!("{} {}", format_icon("monster_floor"), layout)
+        } else {
+            layout.to_string()
+        };
+        format!(
+            "<span data-lvl=\"{}\" data-layout=\"{}\" class=\"layout-btn\">{}</span>",
+            level, layout, displayname
+        )
+    }
 
-    // building raw html yay
+    let layouts_disp = String::from_iter(layouts.iter().enumerate().map(|(lvl, this_layouts)| {
+        let mut out = String::from("<td>");
+        if this_layouts.len() == 1 {
+            out += &format_layout(lvl, this_layouts[0].2);
+        } else {
+            let formatted: Vec<_> = this_layouts
+                .iter()
+                .map(|&(a, b, c)| {
+                    format!(
+                        "<span title=\"luck {:.4} to {:.4}\">{}</span>",
+                        display_luck(a),
+                        display_luck(b),
+                        format_layout(lvl, c)
+                    )
+                })
+                .collect();
+            out += &formatted.join(" / ");
+        }
+        out += "</td>";
+        out
+    }));
+    let mut layouts_full = String::from("<table><tr>");
+    for i in 0..10 {
+        write!(layouts_full, "<td>{}</td>", i).unwrap();
+    }
+    layouts_full += "</tr><tr>";
+    layouts_full += &layouts_disp;
+    layouts_full += "</tr></table>";
+
     let mut goodies_out = String::new();
 
     macro_rules! out {
@@ -762,12 +792,69 @@ pub fn main_update(mut settings: GameSettings) -> String {
         }
         out!("</ul></div>");
     }
-    web_sys::window()
-        .unwrap()
-        .document()
-        .unwrap()
-        .get_element_by_id("goodies")
+    let doc = web_sys::window().unwrap().document().unwrap();
+    doc.get_element_by_id("goodies")
         .unwrap()
         .set_inner_html(&goodies_out);
+    doc.get_element_by_id("map-sel")
+        .unwrap()
+        .set_inner_html(&layouts_full);
+
     return out;
+}
+
+#[wasm_bindgen]
+pub fn render_map(
+    settings: GameSettings,
+    lvl: i32,
+    layout: u32,
+    canvas: CanvasRenderingContext2d,
+    tile_img: HtmlImageElement,
+    tile_sz: usize,
+) -> String {
+    // TODO: currently the map rendering does not depend on luck, so we can just use a dummy value
+    // for it. might need to track it properly later tho
+    let mut floor = DungeonFloorState::new(settings, lvl, layout, 0., 0.);
+    floor.load_map();
+    let mut has_buttons = false;
+    let tiles = floor.get_tiles();
+    for y in 0..64 {
+        for x in 0..64 {
+            let tile = tiles[(x, y)];
+            if let MapTile::SwitchLocation = tile {
+                has_buttons = true;
+            }
+            let tile_off = tile_sz * tile as u8 as usize;
+            let tile_sz = tile_sz as f64;
+            canvas
+                .draw_image_with_html_image_element_and_sw_and_sh_and_dx_and_dy_and_dw_and_dh(
+                    &tile_img,
+                    tile_off as f64,
+                    0.0,
+                    tile_sz,
+                    tile_sz,
+                    x as f64 * tile_sz,
+                    y as f64 * tile_sz,
+                    tile_sz,
+                    tile_sz,
+                )
+                .unwrap();
+        }
+    }
+    let mut out = String::new();
+    if is_mushroom_floor(layout) {
+        out += "Mushroom floor: there's lots of Magma Caps and False Magma Caps here.<br>";
+    }
+    if is_monster_floor(layout) {
+        out += "Monster floor: there's lots of enemies and a guaranteed dwarf gate here.<br>";
+    }
+    if lvl != 9 {
+        if has_buttons && !is_monster_floor(layout) {
+            out += "This floor has a 20% chance of generating a dwarf gate.<br>";
+        }
+        if has_buttons {
+            out += "When a dwarf gate generates, it'll randomly choose 1 to 3 of the buttons on the map.<br>";
+        }
+    }
+    out
 }
