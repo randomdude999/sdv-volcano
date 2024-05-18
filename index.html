@@ -13,7 +13,7 @@
         font-size: 16px;
       }
       #leftside {
-        width: 400px;
+        width: 450px;
         padding-right: 8px;
       }
       #goodies p,
@@ -23,6 +23,9 @@
       #goodies ul {
         list-style: none;
         padding-left: 30px;
+      }
+      #map-legend {
+        list-style: none;
       }
       #goodies > div {
         border-top: 1px solid black;
@@ -48,6 +51,9 @@
       }
       .smallnum {
         width: 7em;
+      }
+      h3 {
+        margin-bottom: 0.5em;
       }
     </style>
     <title>SDV volcano dungeon predictor</title>
@@ -82,6 +88,11 @@
   <body>
     <div id="leftside">
       <div id="settings">
+        <h3>Stardew Valley Volcano Dungeon Predictor</h3>
+        <p>
+          by <a href="https://r9.pm">trillian</a> -
+          <a href="https://github.com/randomdude999/sdv-volcano">source code</a>
+        </p>
         <label for="seed">game seed:</label>
         <input class="setting" type="number" id="seed" />
         <br />
@@ -109,20 +120,52 @@
         <input class="setting smallnum" type="number" id="days_played" min="1" />
         <br />
         <span>
-          the luck value is the daily luck (-0.1 to 0.1), plus 0.07 per luck buff level.
+          the luck value shown in the ranges is the daily luck (-0.1 to 0.1), plus 0.07
+          per luck buff level.
         </span>
       </div>
       <!--<input id=spam value="run 1k iters" type=button>-->
       <div id="temp"></div>
+      <h3>Loot</h3>
       <div id="goodies"></div>
     </div>
     <div id="map">
-      <input type="checkbox" id="big_tiles" />
-      <label for="big_tiles">bigger map preview</label>
+      <h3>Map preview</h3>
+      <div>
+        when multiple layouts are possible, hover the button to see the required luck
+        ranges.
+      </div>
       <div id="map-sel"></div>
+      <div>
+        <input type="checkbox" id="big_tiles" />
+        <label for="big_tiles">bigger preview</label>
+      </div>
       <span id="map-placeholder">[select a level to preview]</span>
       <canvas id="map-canvas" width="512" height="512" class="hidden"></canvas>
       <div id="map-notes"></div>
+      <details>
+        <summary>legend</summary>
+        <ul id="map-legend">
+          <li>
+            <img src="icons/maptile_stairs.png" />
+            Stairs to the previous/next floor
+          </li>
+          <li>
+            <img src="icons/maptile_ruins.png" />
+            Dwarvish ruins (or sometimes just rubble or small lava pools). All chests are
+            found in these.
+          </li>
+          <li>
+            <img src="icons/maptile_button.png" />
+            Possible button location. The actual button locations are randomly chosen from
+            this set.
+          </li>
+          <li>
+            <img src="icons/maptile_monster.png" />
+            Monster spawn location. Additionally, more monsters may spawn randomly.
+          </li>
+        </ul>
+      </details>
     </div>
     <script type="module" src="index.js"></script>
   </body>

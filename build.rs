@@ -65,8 +65,9 @@ use SetPieceFeature::*;
                                     // possible gate location, random
                                     events.push(SetPieceFeature::Rng);
                                 }
-                                // possible switch location - not worth to track
-                                250..=255 => {}
+                                250 => panic!("set piece contained switch for gate #0"),
+                                // possible setpiece switch location - not worth to track
+                                251..=255 => {}
                                 330 => {}
                                 331 => {}
                                 332 => {
