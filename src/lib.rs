@@ -853,7 +853,13 @@ pub fn render_map(
             out += "This floor has a 20% chance of generating a dwarf gate around the exit.<br>";
         }
         if has_buttons {
-            out += "When a dwarf gate generates, it'll randomly choose 1 to 3 of the possible button positions and generate buttons there.<br>";
+            out += "When a dwarf gate generates, it'll randomly choose ";
+            if is_monster_floor(layout) {
+                out += "3";
+            } else {
+                out += "1 to 3";
+            }
+            out += " of the possible button positions and generate buttons there.<br>";
         }
     }
     out
